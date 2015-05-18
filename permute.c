@@ -6,7 +6,7 @@ char* help[]    =
     "    -quiet, so the permuations are not displayed, just the count.",
     "    N, a number from 1 to 20.",
     "    M=n, Method, where n equals 1 thru 4 or A for all.",
-    "         Method 1 is swaps digits.",
+    "         Method 1 swaps digits.",
     "         Method 2 uses an integer flag.",
     "         Method 3 uses a bit flag.",
     "         Method 4 is a special case for the game 0hh1.",
