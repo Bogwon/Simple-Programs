@@ -1,3 +1,4 @@
+// For optimum readability set tabs to 4
 // base64 codec
 // Convert binary files to ASCII (and vice versa) for transmission through
 // text channels, like email.
