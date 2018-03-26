@@ -10,18 +10,20 @@
 #define echo(p, q, s)   if (ECHO) fprintf(stderr, #p ": %" #q s, p)
 #define EOL "\n"
 
-int** make2Darray(int rows, int columns)
+typedef	int	array_t;
+
+array_t** make2Darray(int rows, int columns)
 {
 	int offset(int index, int rows, int columns)
 	{
-		return		(			rows * sizeof(int*))
-		 		  +	(index * columns * sizeof(int ));
+		return		(			rows * sizeof(array_t*))
+		 		  +	(index * columns * sizeof(array_t ));
 	}
 
 	char*	p = (char*)malloc(offset(rows, rows, columns));
-	int**	q = (int**)p;
+	array_t**	q = (array_t**)p;
 	for (int i=0; i<rows; i++)
-		q[i] = (int*)&p[offset(i, rows, columns)];
+		q[i] = (array_t*)&p[offset(i, rows, columns)];
 
 	return q;
 }
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
 	if (argc > 1)	   rows = atoi(argv[1]);
 	if (argc > 2)	columns = atoi(argv[2]);
 
-	int** a = make2Darray(rows, columns);
+	array_t** a = make2Darray(rows, columns);
 	int n = 1;
 	for (int i=0; i<rows; i++)
 	{
