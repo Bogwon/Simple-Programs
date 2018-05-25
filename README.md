@@ -8,3 +8,5 @@ For the story behind permute.c:   http://pergelator.blogspot.com/2015/05/permuta
 For the story behind base64.c:    https://pergelator.blogspot.com/2008/10/sarah-base64.html
 
 For the story behind Factorial.c  https://pergelator.blogspot.com/2018/03/factorial.html
+
+For the story behind permute.c    http://qr.ae/TUTJVh (Quora.com)
