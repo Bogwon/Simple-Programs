@@ -2,13 +2,19 @@
 // Chuck Pergiel, May 2018
 // Compile command: cc fareyaddition.c
 // Inspired by Numberphile video https://www.youtube.com/watch?v=0hlvhQZIOQw&feature=youtu.be
+// Control-C handler from https://stackoverflow.com/questions/17766550/ctrl-c-interrupt-event-handling-in-linux
 
-#include <math.h>
+#include <math.h>		// fabs
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include <signal.h>							// handle control-C
+volatile sig_atomic_t flag = 0;
+void my_function(int sig) { flag = 1; }		// can be called asynchronously
+
 #define	ONEzillion		10							// Bigger than the biggest value we expect
+#define indexof(p, b)	((p-b)/sizeof(b[0]))
 #define dimensionof(p)  (sizeof(p)/sizeof(p[0]))
 int		ECHO = 1;
 #define echo(  p, q, s) if (ECHO ) fprintf(stderr, #p ": %" #q s, p)
@@ -51,16 +57,14 @@ int gcf(int m, int n)	// greatest common factor
 	return m;
 }
 
-void show(fraction_t* a, int count)
+void show(fraction_t* a, int count)		// If you want see
 {
 	for (int k=0; k<count; k++)
 	{
 		echo(k,					3d, "  ");
 		echo(a[k].numerator,	 d, "  ");
 		echo(a[k].denominator,	 d, "  ");
-		echo(a[k].value,		 f, "  ");
-		echo(a[k].upless,		 f, "  ");
-		echo(a[k].upmore,		 f, EOL);
+		echo(a[k].value,		 f, EOL);
 	}
 }
 
@@ -70,28 +74,30 @@ float verify(fraction_t* c1, fraction_t* c2)
 // - tangent to the number line,
 // - with the center directly above the point designated by the fraction,
 // - with a diameter based on the fraction,
-// are tangent to each other 
+// are tangent to each other
+// lowercase letters indicate smaller circle, uppercase are for larger one
 
-	fraction_t* f = c1; 
+	fraction_t* f = c1;		// Presume c1 denominator is larger, so f1 will be the smaller circle
 	fraction_t* F = c2;
 	if (f->denominator < F->denominator)
 	{
-		F = c1;
+		F = c1;				// if denominator is smaller, circle will be larger
 		f = c2;
 	}
 
 	float r = 1/(float)(2 * f->denominator * f->denominator);	// radius of smaller circle
 	float R = 1/(float)(2 * F->denominator * F->denominator);	// radius of larger circle
 
-	float dV = abs(f->value - F->value);			// distance between values on number line
+	float dV = fabs(f->value - F->value);			// distance between values on number line
 	float dR = R - r;								// difference between radii
 	float dC = R + r;								// distance between centers
 	return ((dV * dV) + (dR * dR)) - (dC * dC);		// Should be zero
-//	return sqrt((dV * dV) + (dR * dR)) - (r + R);	// Should be zero
 }
 
 int main(int argc, char** argv)
 {
+  signal(SIGINT, my_function);	// Register Control-C handler
+
 //	echo(sizeof(fraction_t), ld, EOL);
 	int q = 234;
 	if (argc>1)
@@ -106,19 +112,24 @@ int main(int argc, char** argv)
 		echo(kcount, d, " is too big. Not able to allocate enough memory." EOL);
 		exit(0);
 	}
-						  memset(a, 0,	kcount * sizeof(fraction_t)	);	// function level variables are NOT initialized to zero.
+						  memset(a, 0,	kcount * sizeof(fraction_t)	);
 
 // Generate fractions, one denominator at a time
 
+	printf("Denominator    New Fractions    Total Fractions" EOL);
 	a[0].numerator		= 0;	// End points of our number line
 	a[0].denominator	= 1;
 	a[0].value			= 0;	// zero
 	a[1].numerator		= 1;
 	a[1].denominator	= 1;
 	a[1].value			= 1;	// and one
-	int k = 2;
+	int 	k		= 2;
+	int		ecount	= 0;
+	int error_count = 0;
+	float	maxdiff = 0;
 	for (int i=1; i<=q; i++)	// denominator
 	{
+		int start = k;
 		for (int j=1; j<i; j++)		// numerator
 		{
 			int factor = gcf(j, i);
@@ -128,7 +139,7 @@ int main(int argc, char** argv)
 			k++;	// Cannot increment index in assignment, bad things happen.
 		}
 		qsort(a, k, sizeof(a[0]), fcmp);	// put them in order
-		echo(k, d, " before compression  ");
+
 		int limit = k;
 		for (int i=1; i<limit; i++)		// Compress. Eliminate duplicate entries.
 		{
@@ -144,65 +155,57 @@ int main(int argc, char** argv)
 					k--;
 				}
 		}
-		qsort(a, limit, sizeof(a[0]), fcmp);	// Cast out duplicates
+		qsort(a, limit, sizeof(a[0]), fcmp);	// Move duplicates to top of list
+		
+		if (i>10)	printf("\r");						// After the first 10, overwrite the last line
+		printf("%10d    %10d    %10d", i, k-start, k);
+		if (i<=10)	printf(EOL);						// Print first 10 fractions on their own line
 
-		echo(k, d, " = Number of elements after deleting duplicates" EOL);
-
-		for (int j=1; j<k-1; j++)			// Copy values from parents. Needed to verify circles.
-		{									// We'll use these to locate the actual fractions later
-			if (a[j].upless == 0)
-				a[j].upless =  a[j - 1].value;
-			if (a[j].upmore == 0)
-				a[j].upmore =  a[j + 1].value;
-		}	
-	}
-
-	float maxdiff = 0;
-	for (int j=1; j<k-1; j++)		// Verify that adjacent circles are tangent to each other
-	{
-		fraction_t	less;		 less.value = a[j].upless;
-		fraction_t	more;		 more.value = a[j].upmore;
-		fraction_t*	p = bsearch(&less, a, k, sizeof(a[0]), fcmp);
-		fraction_t*	q = bsearch(&more, a, k, sizeof(a[0]), fcmp);
-		float	result1 = verify(p, &a[j]);
-		float	result2 = verify(q, &a[j]);
-		float diff = fabs(result1-result2);
-		if (diff!=0)
+		for (int j=1; j<k-1; j++)			// Verify fractions are Farey sum of parents
 		{
-			if (maxdiff < diff)
-				maxdiff = diff;
-
-#define	RCH .0001
-
-			if (diff > RCH)
+			if (a[j].value != ((float)(a[j-1].numerator + a[j+1].numerator) / (float)(a[j-1].denominator + a[j+1].denominator)))
 			{
-				echo(j, d, "  ");
-				echo(result1, f, "  ");
-				echo(result2, f, EOL);
+				echo(j, d, " Farey sum fail" EOL);
+				show(&a[j-1], 3);				
+				error_count++;
 			}
 		}
-	}
-	echo(maxdiff, f, EOL);
-	echo(k, d, " = Count of elements in array.  ");
-	echo(kcount, d, " = Calculated number" EOL);
 
-	show(a, k);
-
-	int error_count = 0;			// Verify that each fraction is a Farey sum of it's immediate neighbors
-	for (int i=0; i<k-2; i++)
-	{
-		fraction_t	sum;
-		sum.numerator	= a[i].numerator	+ a[i+2].numerator;
-		sum.denominator = a[i].denominator	+ a[i+2].denominator;
-		sum.value		=  (float)sum.numerator / (float)sum.denominator;
-		if (sum.value != a[i+1].value)
+		for (int j=1; j<k-1; j++)			// Verify circles.
 		{
-			echo(i,	d, EOL);
-			show(&a[i],	3);
-			error_count++;
+			if	(	(a[j].upless == 0)
+				&&	(a[j].upmore == 0)
+				)
+			{
+				float	result1 = verify(&a[j-1], &a[j  ]);
+				float	result2 = verify(&a[j  ], &a[j+1]);
+				float	diff	= fabs(result1-result2);
+				if (diff != 0)
+				{
+					ecount++;
+					if (maxdiff < diff)
+						maxdiff = diff;
+#define	RCH	.0000001
+
+					if (diff > RCH)
+					{
+						echo(j, d, " index   ");
+						echo(diff, .12f, " difference" EOL);
+						show(&a[j-1], 3);
+					}
+				}
+			}
 		}
+	    if(flag)
+			break;
 	}
-	echo(error_count, d, EOL);
+	printf(EOL);
+	ECHO = 1;
+	echo(k,				d, " = Number of generated fractions"	EOL	);
+	echo(kcount,		d, " = Calculated number"				EOL	);
+	echo(error_count, 	d, " = Farey sum errors"				EOL	);
+	echo(ecount,		d, " = Ford circle discrepencies"		EOL	);
+	echo(maxdiff,	 .12f, " = Largest circle discrepency"		EOL	);	//  0.000000037253
 	return error_count;
 }
 
