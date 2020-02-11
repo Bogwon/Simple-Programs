@@ -1,6 +1,7 @@
-// generate box characters from unicode number
+// generate box drawing characters from unicode number
 // https://www.fileformat.info/info/unicode/utf8.htm
 // https://www.fileformat.info/info/unicode/block/box_drawing/list.htm
+// https://pergelator.blogspot.com/2020/02/curses.html
 
 #include <stdio.h>
 #include <string.h>
@@ -26,9 +27,9 @@ int unicode_count(char* ux)		// For valid unicode start bytes, returns length of
 	return 0;
 }
 
-int unicode_encode(int n, char* ptr)
-{
-	int count = 1;
+int unicode_encode(int n, char* ptr)	// takes the unicode and encodes it in a character string
+{										// terminates string with a zero
+	int count = 1;						// returns the number of bytes used, not including the zero
 	if (n>0x10ffff)	return -1;
 	if (n>  0xffff) count = 4;	else
 	if (n>   0x7ff)	count = 3;	else
@@ -51,20 +52,29 @@ int unicode_encode(int n, char* ptr)
 	return count;
 }
 
-int main(int argc, char** argv)
+int main(void)
 {
 	int i=0x2500;
-	while (i<0x2580)
+	for (int j=0; j<8; j++)				// column headers
+		printf("code count char  ");
+	printf(EOL);
+	for (int j=0; j<16; j++)
 	{
-		for (int j=0; j<32; j++)
+		int k = i;					// save starting value
+		for (int j=0; j<8; j++)		
 		{
 			char box[5];
-			int count = unicode_encode(i++, box);
+			int count = unicode_encode(i, box);
 			if (unicode_count(box)!=count)
 				printf("Error - count does not match. count1: %d  count2: %d" EOL, count, unicode_count(box));
-			printf("%s ", box);
+
+			printf("%4x  ", i);
+			printf(" %d   ", count);
+			printf(" %s    ", box);
+			i +=0x10;
 		}
 		printf(EOL);
+		i = k + 1;		// increment for next row
 	}
 	return 0;
 }
