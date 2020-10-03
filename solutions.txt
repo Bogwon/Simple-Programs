@@ -1,0 +1,136 @@
+Cube Puzzle Solver
+
+Pieces:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║ │ │A│A║    ║ │ │B│B║    ║ │ │C│C║    ║ │ │D│ ║    ║ │ │E│ ║
+    ║ │ │A│ ║    ║ │ │B│ ║    ║ │ │C│ ║    ║ │ │D│ ║    ║ │ │E│E║
+    ║ │ │A│A║    ║ │ │B│B║    ║ │ │C│C║    ║ │ │D│D║    ║ │ │E│E║
+    ║ │ │ │A║    ║ │ │B│B║    ║ │ │C│ ║    ║ │ │D│D║    ║ │ │E│E║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║ │ │ │ ║    ║ │ │ │ ║    ║ │ │ │ ║    ║ │ │ │ ║    ║ │ │ │ ║
+    ║ │F│F│ ║    ║ │ │G│ ║    ║ │H│H│ ║    ║ │I│I│I║    ║ │J│J│J║
+    ║ │F│F│ ║    ║ │G│G│ ║    ║ │ │H│H║    ║ │ │I│ ║    ║ │J│J│ ║
+    ║ │F│F│F║    ║ │G│G│G║    ║ │ │H│H║    ║ │ │I│I║    ║ │ │J│J║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 286468076
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║E│E│G│J║    ║E│E│G│J║    ║E│E│G│J║    ║A│E│B│B║
+    ║F│I│I│I║    ║F│H│G│J║    ║F│H│G│J║    ║A│A│B│B║
+    ║F│H│I│J║    ║F│H│G│J║    ║C│C│C│C║    ║C│A│C│B║
+    ║F│H│I│I║    ║F│H│D│D║    ║D│D│D│D║    ║A│A│B│B║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 324591903
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║C│C│C│C║    ║C│I│C│I║    ║A│I│I│I║    ║B│B│E│I║
+    ║D│H│H│J║    ║D│H│H│J║    ║A│A│H│H║    ║B│B│E│E║
+    ║D│G│G│G║    ║D│G│G│J║    ║D│A│G│J║    ║D│B│E│E║
+    ║F│F│F│J║    ║F│F│F│J║    ║A│A│F│J║    ║B│B│E│E║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 347676392
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║J│I│J│I║    ║A│I│I│I║    ║D│D│H│I║    ║B│B│H│E║
+    ║J│J│J│F║    ║A│A│H│F║    ║D│D│H│F║    ║B│B│E│E║
+    ║C│J│J│F║    ║C│A│H│F║    ║C│D│H│F║    ║C│B│E│E║
+    ║C│G│G│G║    ║A│A│G│G║    ║C│D│G│F║    ║B│B│E│E║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 591641725
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║A│I│D│D║    ║F│I│I│I║    ║F│I│G│I║    ║E│E│B│B║
+    ║A│A│D│D║    ║F│H│G│J║    ║F│H│G│J║    ║E│E│B│B║
+    ║F│A│D│J║    ║F│H│G│J║    ║F│H│G│J║    ║E│E│G│B║
+    ║A│A│D│J║    ║C│C│C│C║    ║C│H│C│J║    ║E│H│B│B║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 770611005
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║I│I│B│B║    ║C│I│B│B║    ║I│I│I│B║    ║C│A│B│B║
+    ║C│G│G│G║    ║C│F│F│F║    ║C│F│F│F║    ║C│A│A│F║
+    ║E│G│G│D║    ║E│J│J│D║    ║E│J│J│J║    ║E│J│A│J║
+    ║H│H│G│D║    ║E│H│H│D║    ║E│H│H│D║    ║E│A│A│D║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1000903296
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║J│I│I│I║    ║H│H│I│G║    ║J│A│I│I║    ║E│E│E│E║
+    ║J│F│F│F║    ║J│H│H│G║    ║J│A│A│G║    ║E│E│E│G║
+    ║J│F│F│F║    ║J│H│H│G║    ║D│D│A│G║    ║D│D│D│D║
+    ║C│F│B│B║    ║C│C│B│B║    ║C│A│A│B║    ║C│C│B│B║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1213359804
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║C│C│B│B║    ║G│A│B│B║    ║G│G│G│B║    ║G│G│B│B║
+    ║C│I│I│D║    ║J│A│A│D║    ║J│E│E│E║    ║E│E│E│E║
+    ║C│C│I│D║    ║H│H│A│D║    ║J│H│H│D║    ║J│H│H│D║
+    ║C│I│I│I║    ║J│A│A│F║    ║J│F│F│F║    ║J│F│F│F║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1464657503
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║C│A│H│B║    ║C│G│H│B║    ║E│E│E│E║    ║E│E│E│B║
+    ║C│A│A│B║    ║I│G│H│B║    ║I│G│H│B║    ║F│F│F│B║
+    ║C│G│A│D║    ║C│G│H│D║    ║I│G│H│D║    ║F│F│F│D║
+    ║C│A│A│D║    ║I│J│J│D║    ║I│J│J│J║    ║I│J│F│J║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1528357221
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║J│G│D│D║    ║J│G│D│D║    ║J│G│H│D║    ║B│B│A│D║
+    ║I│I│H│F║    ║J│G│H│F║    ║J│G│H│F║    ║B│B│A│A║
+    ║J│I│H│F║    ║J│G│H│F║    ║C│C│C│C║    ║C│B│C│A║
+    ║I│I│I│F║    ║E│E│E│F║    ║E│E│E│E║    ║B│B│A│A║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1664216097
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║C│J│J│E║    ║C│J│J│J║    ║C│J│A│J║    ║C│F│B│B║
+    ║C│G│D│E║    ║I│F│D│E║    ║C│F│A│A║    ║I│F│B│B║
+    ║G│G│D│E║    ║I│F│D│E║    ║I│F│D│A║    ║I│F│D│B║
+    ║G│G│G│E║    ║I│H│H│E║    ║H│H│A│A║    ║H│H│B│B║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 1843806049
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║C│F│B│B║    ║C│J│A│J║    ║C│J│J│J║    ║C│J│J│E║
+    ║I│F│B│B║    ║C│F│A│A║    ║I│F│D│E║    ║C│G│D│E║
+    ║I│F│D│B║    ║I│F│D│A║    ║I│F│D│E║    ║G│G│D│E║
+    ║H│H│B│B║    ║H│H│A│A║    ║I│H│H│E║    ║G│G│G│E║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+
+Comparisons: 2031357949
+
+Solution:
+    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗    ╔═╤═╤═╤═╗
+    ║B│B│A│I║    ║D│H│H│I║    ║D│H│H│I║    ║C│C│H│H║
+    ║B│B│A│A║    ║D│G│G│I║    ║D│G│G│G║    ║C│G│F│F║
+    ║J│B│J│A║    ║J│J│J│I║    ║D│J│J│I║    ║C│C│F│F║
+    ║B│B│A│A║    ║E│E│E│E║    ║D│E│E│E║    ║C│F│F│F║
+    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝    ╚═╧═╧═╧═╝
+Solutions: 12
