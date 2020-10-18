@@ -11,6 +11,11 @@ char* title = "Cube Puzzle Solver";
 // the spots without impinging on any other pieces. When we have that, we use 
 // the current indices of all our permutations to mark the places in the 64 
 // character ASCI string, which we then use to display the solution.
+//
+// time:
+//	real	886m 25.475s
+//	user	885m 42.444s
+//	sys		  0m  1.764s
 
 #include <assert.h>
 #include <ctype.h>
@@ -19,7 +24,6 @@ char* title = "Cube Puzzle Solver";
 
 #define	dimensionof(p)	(sizeof(p)/sizeof(p[0]))
 #define EOL "\n"
-
 #define ulong unsigned long
 
 char*	pieces[10] =	// commas separate invidual pieces
@@ -57,6 +61,41 @@ char*	pieces[10] =	// commas separate invidual pieces
 									" JJ "
 									"  JJ"
 };
+
+int showframes(int n, char** pptr)
+{
+	char*	boxtop  = "    ╔═╤═╤═╤═╗";
+	char*	boxwall	= "    ║ │ │ │ ║";			// Not used, just here for show
+	char*	boxbot	= "    ╚═╧═╧═╧═╝";
+	char*	vbar[]	= { "│", "│", "│", "║" };
+	int 	count	= 0;
+
+	for (int i=0; i<n; i++)
+		count += printf("%s", boxtop);
+	count += printf(EOL);
+
+	for (int j=0; j<4; j++)			// rows
+	{
+		for (int i=0; i<n; i++)		// frames
+		{
+			printf("    ║");
+			for (int k=0; k<4; k++)					// characters
+				count += printf("%c%s", *pptr[i]++, vbar[k]);
+		}
+		count += printf(EOL);
+	}
+	for (int i=0; i<n; i++)
+		count += printf("%s", boxbot);
+	count += printf(EOL);
+
+	return count;
+}
+
+int showCube(char* Acube)
+{
+	char*	pptr[4] = { Acube, &Acube[16], &Acube[32], &Acube[48] };
+	return showframes( 4, pptr);
+}
 
 void shiftleft(char* b, char* piece)	// shift piece one place to left inside the 4 x 4 frame
 {
@@ -175,52 +214,19 @@ ulong mangle(char* piece, int rotation, int flip, int axis, int level, int verti
 	return result;
 }
 
-int showframes(int n, char** pptr)
-{
-	char*	boxtop  = "    ╔═╤═╤═╤═╗";
-	char*	boxwall	= "    ║ │ │ │ ║";
-	char*	boxbot	= "    ╚═╧═╧═╧═╝";
-	char*	vbar[]	= { "│", "│", "│", "║" };
-	int 	count	= 0;
+#define	ZILLION	1000000			// one million, can be any arbitrary value
+long	counter	 = ZILLION;		// progress indicator
+long	millions = 0;
 
-	for (int i=0; i<n; i++)
-		count += printf("%s", boxtop);
-	count += printf(EOL);
-
-	for (int j=0; j<4; j++)			// rows
-	{
-		for (int i=0; i<n; i++)		// frames
-		{
-			printf("    ║");
-			for (int k=0; k<4; k++)					// characters
-				count += printf("%c%s", *pptr[i]++, vbar[k]);
-		}
-		count += printf(EOL);
-	}
-	for (int i=0; i<n; i++)
-		count += printf("%s", boxbot);
-	count += printf(EOL);
-
-	return count;
-}
-
-int showCube(char* Acube)
-{
-	char*	pptr[4] = { Acube, &Acube[16], &Acube[32], &Acube[48] };
-	return showframes( 4, pptr);
-}
-
-#define	ZILLION	1000000						// one million
-int		limit0 = 12;	// piece 0 can be shifted to 3 positions in any of the 4 layers.
-						// All other positions are just rotations or mirror images.
-int		limit1;			// 96 * 3 = 288
-int		limit2;			// 96 * 4 = 384
+int		limit0 = 12;		// piece 0 can be shifted to 3 positions in any of the 4 layers.
+							// All other positions are just rotations or mirror images.
+int		limit1;				// 96 * 3 = 288
+int		limit2;				// 96 * 4 = 384
+int		mx[10]	 = {0};		// array of starting indexes into the ten mask arrays
 ulong	mask[10][400];
 char	solution[65];
-long	counter = ZILLION;
-int		millions = 0;
 
-void place(int px, int i)
+void place(int px, int i)		// Use 64 bit mask to place characters in 64 character string
 {
 	//				 0123456789abcdef
 	ulong onebit = 0x8000000000000000;
@@ -248,16 +254,17 @@ ulong plunge(int px, ulong maskx)
 	int limit;
 	if (px<5)	limit = limit1;
 	else		limit = limit2;
-	for (int i=0; i<limit; i++)
+	for (int i=mx[px]; i<limit; i++)
 		if ((maskx & mask[px][i])==0)
 		{
 			if (plunge(px+1, maskx | mask[px][i]))
 			{
 				place(px, i);
+				mx[px] = i+1;	// next time we start with next mask
 				return 1;
 			}
 		}
-
+	mx[px] = 0;	// Done with this permutation, reset starting index to zero.
 	return 0;
 }
 
@@ -304,16 +311,21 @@ int main(void)
 	for (int i=0; i<limit0; i++)
 	{
 		fprintf(stderr, EOL "Zillions: ");
-		if (plunge(1, mask[0][i]))
+		while (plunge(1, mask[0][i]))
 		{
+			fprintf(stderr, EOL "+");
 			place(0, i);
-			printf(EOL "Comparisons: %ld" EOL, (millions * ZILLION) + (ZILLION - counter));
+			printf(EOL "Comparisons: %ld", millions);
+			printf(					"%06ld", (ZILLION - counter));
+//			printf(EOL "Comparisons: %ld" EOL, (millions * ZILLION) + (ZILLION - counter));
 			printf(EOL "Solution:" EOL);
 			solution[64] = 0;
 			showCube(solution);
 			Solutions++;
 		}
-	}
+		memset(mx, 0, sizeof(mx));	// found all solutions starting with this value of i
+	}								// time to move on to next value, reset all indices to zero.
+
 	printf("Solutions: %d" EOL, Solutions);
 
 	return 0;
