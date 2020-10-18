@@ -1,0 +1,5 @@
+https://pergelator.blogspot.com/2020/10/cube-puzzle-part-2.html
+Three other files in this project:
+cube.c
+solutions.txt
+mangle.txt
