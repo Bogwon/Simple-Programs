@@ -1,5 +1,8 @@
 char* title = "Demonstrate various methods of computing pi.";
 
+// April 2018
+// Embellished March 2021
+
 char* title_classic		= "Method 1: Classic Method.";
 char* title_Ramanujan	= "Method 2: Use a formula devised by Srinivasa Ramanujan.";
 char* title_BBP			= "Method 3: Use the new Bailey-Borwein-Plouffe formula.";
@@ -12,16 +15,47 @@ char* title_chord		= "Method 5: Add the lengths of successively smaller chords."
 #define	EOL				"\n"
 #define	FORMAT			"%21.17f"
 #define	FORMAT_STRING	"%2d  %14e %14e " FORMAT FORMAT EOL
+#define	FORMAT_STRING2	"%12s  " FORMAT FORMAT FORMAT FORMAT EOL
+
 
 #define	USE_TRIG	1
 
 #define	WiPi	3.14159265358979323846264338327950288419716939937510
 // Pi according to Wikipedia
 
+int		ECHO = 1;
+#define echo(  p, q, s) if (ECHO ) fprintf(stderr, #p ": %" #q s, p)	// for debugging
+			// p is the parameter you want to print
+			// q is the format letter - d, s, f, etc.
+			// s is the white space at the end
 
 double	PI;
 
+char* commafy(long n)
+{
+	static char buffer[64];
 
+	int i = sizeof(buffer);
+	buffer[--i] = 0;		// terminating zero
+	int count = 0;
+	while (1)
+	{
+		buffer[--i] = (n % 10) + '0';
+		n /= 10;		
+		if (n == 0)
+			break;
+		count++;
+//		echo(count, d, "  ");		// example use of echo
+//		echo(	i,  d, "  ");
+//		echo(	n,  d, EOL);
+		if (count==3)
+		{
+			buffer[--i] = ',';
+			count = 0;
+		}
+	}
+	return &buffer[i];
+}
 
 void Continue(char* action)
 {
@@ -39,7 +73,7 @@ void classic_method(void)
 	double	pi		= 0;
 	double	x;
 
-	printf("%s" EOL EOL, title_classic);
+	printf(EOL EOL "%s" EOL EOL, title_classic);
 	printf("Step    divisor       increment              pi              difference" EOL);
 
 // We can only make 10 iterations before the divisor grows so big that the
@@ -94,7 +128,7 @@ void Ramanujan_method(void)
 	double	y;
 	int		k = 0;
 
-	printf("%s" EOL EOL, title_Ramanujan);
+	printf(EOL EOL "%s" EOL EOL, title_Ramanujan);
 
 	f = 2 * sqrt(2) / 9801;
 	printf("Step  step value         sum                 pi              difference" EOL);
@@ -126,7 +160,7 @@ void BBP_method(void)
 	double	pi		= 0;
 	double	x;
 
-	printf("%s" EOL EOL, title_BBP);
+	printf(EOL EOL "%s" EOL EOL, title_BBP);
 
 // We can only make 10 iterations before the divisor grows so big that the
 // additions effectively go to zero.
@@ -144,8 +178,8 @@ void BBP_method(void)
 
 		pi += x;
 		printf(FORMAT_STRING, k + 1, divisor, x, pi, pi - PI);
-		if ((pi-PI)==0)
-			break;
+		if (pi==PI)		// at some point x gets so small that it no longer has any impact on pi
+			break;		// due to the format of floating point numbers.
 
 		divisor *= 16;
 	}
@@ -159,30 +193,25 @@ void BBP_method(void)
 
 void tangent_method(void)
 {
-	int		k		= 1;
-	int		n		= 2;	// number of chords for a half circle
-	int		count	= 0;	// so we don't go wild
+	long	n		= 2;	// number of tangents for a half circle
 	double	a		= 1;	// one half the length of the tangent
 	double	pi;
+	double	x		= 0;	// distance along radius from circle to end of current tangent
 
-	double	x		= 0;	// distance from circle to end of current tangent
-
-	printf("%s" EOL EOL, title_tangent);
-	printf("Step    tangent       altitude               pi              difference" EOL);
+	printf(EOL EOL "%s" EOL EOL, title_tangent);
+	printf("  Tangents          tangent               altitude                 pi                difference" EOL);
+		// "----12s-----  123456789-123456789-1 123456789-123456789-1 123456789-123456789-1 123456789-123456789-1 EOL
 
 	while (1)
 	{
-		n *= 2;
-		pi = a * n;
-		printf(FORMAT_STRING, k++, a * 2, x, pi, pi-PI);
-		if (pi<=PI)
+		pi = 2 * a * n;
+		x = sqrt(a * a + 1) - 1;
+		printf(FORMAT_STRING2, commafy(n), a * 2, x, pi, pi-PI);
+		if (x==0)
 			break;
 
-		if ((++count % 20)==0)
-			Continue("continue");
-
-		x = sqrt(a * a + 1) - 1;
 		a =	((a * a) - (x * x)) / (2 * a);
+		n *= 2;
 	}
 }
 
@@ -194,31 +223,28 @@ void tangent_method(void)
 
 void chord_method(void)
 {
-	int		k		= 1;
-	int		n		= 1;	// number of chords for a half circle
-	int		count	= 0;	// so we don't go wild
-	double	a		= 1;	// altitude from midpoint of chord to circle
+	int		n		= 2;		// number of chords for a half circle
+	double	c		= sqrt(2);	// chord
+	double	r		= 1.0;		// radius
+	double	a;					// altitude from midpoint of chord to center
+	double	b;					// distance from midpoint of chord to rim
 	double	pi;
 
-	double	h;				// hypotenuse or chord
+	printf(EOL EOL "%s" EOL EOL, title_chord);
+	printf("   Chords           altitude               chord                   pi               difference"      EOL);
+		// "----12s-----  123456789-123456789-1 123456789-123456789-1 123456789-123456789-1 123456789-123456789-1 EOL
 
-	printf("%s" EOL EOL, title_chord);
-	printf("Step    atlitude       chord                 pi              difference" EOL);
-
-	h		= sqrt(2);
 	while (1)
 	{
-		n *= 2;
-		pi = h * n;
-		printf(FORMAT_STRING, k++, a, h, pi, pi-PI);
+		a = sqrt(   1	 - (c * c / 4));
+		pi = c * n;
+		printf(FORMAT_STRING2, commafy(n), a, c, pi, pi-PI);
 		if (pi>=PI)
-			break;
+			break;		// due to the inherent limits of floating point, eventually our calculated value will exceed the limit
 
-		if ((++count % 20)==0)
-			Continue("continue");
-
-		a = 1 - sqrt(   1	 - (h * h / 4));
-		h =		sqrt((a * a) + (h * h / 4));
+		b = r - a;
+		c =	sqrt((b * b) + (c * c / 4));
+		n *= 2;
 	}
 }
 
@@ -231,22 +257,18 @@ int main(void)
 
 #if USE_TRIG
 	PI		= acos(-1);
-	printf("we get from the trig function acos:" FORMAT EOL EOL, PI);
+	printf("we get from the trig function acos:" FORMAT EOL, PI);
 #else
 	PI		= WiPi;
-	printf("we got from Wikipedia:"				 FORMAT EOL EOL, PI);
+	printf("we got from Wikipedia:"				 FORMAT EOL, PI);
 #endif
 
-	classic_method();	Continue("continue");
-	Ramanujan_method();	Continue("continue");
-	BBP_method();		Continue("continue");
-	tangent_method();	Continue("continue");
+	classic_method();
+	Ramanujan_method();
+	BBP_method();
+	tangent_method();
 	chord_method();
 
-// We ask for a key press in case the program has been invoked automatically
-// instead of the command being entered in a DOS box or terminal window.
-
-	Continue("Exit");
 	return 0;
 }
 
