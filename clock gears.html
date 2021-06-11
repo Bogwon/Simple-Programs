@@ -1,0 +1,151 @@
+<html>
+<head>
+</head>
+
+<body>
+	<svg id="svg" width="640" height="800">
+		<polygon id=gear1 fill="#b5a642" >
+			<animateTransform	attributeName="transform"
+						        type="rotate"
+						        from="0 250 200" to="360 250 200"
+						        begin="0s" dur="10s"
+						        repeatCount="indefinite"
+			/>
+		</polygon>
+		<polygon id=gear2 stroke="black" fill="slategray" >
+			<animateTransform	attributeName="transform"
+						        type="rotate"
+						        from="0 250 440" to="-360 250 440"
+						        begin="0s" dur="30s"
+						        repeatCount="indefinite"
+			/>
+		</polygon>
+		<polygon id=gear3 stroke="black" fill="none">
+			<animateTransform	attributeName="transform"
+						        type="rotate"
+						        from="0 250 200" to="360 250 200"
+						        begin="0s" dur="120s"
+						        repeatCount="indefinite"
+			/>
+		</polygon>
+		<polygon id=gear4 stroke="black" fill="blue" fill-opacity="0.5">
+			<animateTransform	attributeName="transform"
+						        type="rotate"
+						        from="0 250 440" to="-360 250 440"
+						        begin="0s" dur="30s"
+						        repeatCount="indefinite"
+			/>
+		</polygon>
+	</svg>
+
+	<script>
+/*		<polygon id=gear1 stroke="lightsteelblue" fill="gray"/>
+		<polygon id=gear2 stroke="slategray" fill="blue"/>
+		<polygon id=gear2 fill="slategray"/>
+		<polygon id=gear3 stroke="black"/>
+		<polygon id=gear4 stroke="black"/>
+		<polygon id=gear3 stroke="black" fill="white" fill-opacity="0.5">
+*/
+		function plotGear(va2, teeth, radius, start, cx, cy)		// Draw teeth on gear. Each tooth is made of two triangles.	
+		{
+			var deltaT	= 2*Math.PI / teeth;		/* angle. slashes confuse editor */
+			var	hwratio = .5;						// gear tooth height to width ratio
+
+	// Lengths
+			var height 		= deltaT * hwratio * radius;
+			var radiusBase  = radius - (.5 * height);
+			var radiusTip	= radius + (.5 * height);
+			var tangent		= Math.sqrt(radiusTip**2 - radiusBase**2);
+
+	// Angles
+			var angleB	= tangent / radiusBase;
+			var angleA	= Math.atan(angleB);
+			var face	= (angleB - angleA) / 2;
+			var pitch	= ((Math.PI / teeth) - face) * 2;
+			var tip		= .4 * pitch;
+			var gap		= .6 * pitch;
+			var angle	= start;
+			var a		= [];				// Angular position of the corners
+											// of the four points that make up a tooth
+
+			var i		= 0;				// index
+			for (var t=0; t<teeth; t++)
+			{
+				a[0] = angle;				// For each tooth, points are in angular order
+				a[1] = angle + face;
+				a[2] = angle + face + tip;
+				a[3] = angle + face + tip + face;
+
+				// x											y
+				va2[i++] = radiusBase * Math.cos(a[0]) + cx;	va2[i++] = radiusBase * Math.sin(a[0]) + cy;
+				va2[i++] = radiusTip  * Math.cos(a[1]) + cx;	va2[i++] = radiusTip  * Math.sin(a[1]) + cy;
+				va2[i++] = radiusTip  * Math.cos(a[2]) + cx;	va2[i++] = radiusTip  * Math.sin(a[2]) + cy;
+				va2[i++] = radiusBase * Math.cos(a[3]) + cx;	va2[i++] = radiusBase * Math.sin(a[3]) + cy;
+				angle = a[3] + gap;		// Move to next tooth
+			}
+
+			return i;
+		}
+// end plotGear
+		function drawGear(gearx, ax, count) {
+			for (i=0; i<count; i+=2) {
+				var point = svg.createSVGPoint();
+				point.x = ax[i  ];
+				point.y = ax[i+1];
+				gearx.points.appendItem(point);
+			}
+		}
+
+
+		var a1		= [];	
+		var a2		= [];	
+		var a3		= [];	
+		var a4		= [];	
+		var	pitch	=   3;
+
+		var teeth1	=  20;
+		var radius1	= pitch * teeth1;
+		var cx		= 250;
+		var cy		= 200;
+
+		var count = plotGear(a1, teeth1, radius1, 0, cx, cy);
+
+		drawGear(gear1, a1, count);
+
+		var teeth2	=  60;
+			radius2	= pitch * teeth2;
+			cy2		= cy + radius1 + radius2;
+
+		var count = plotGear(a2, teeth2, radius2, .00, cx, cy2);
+
+		drawGear(gear2, a2, count);
+
+// 2nd pair
+		var teeth3	=  64;
+		var radius3	= pitch * teeth3;
+
+		var count = plotGear(a3, teeth3, radius3, 0, cx, cy);
+
+		drawGear(gear3, a3, count);
+
+		var teeth4	=  16;
+			radius4	= pitch * teeth4;
+			cy2		= cy + radius3 + radius4;
+
+		var count = plotGear(a4, teeth4, radius4, .00, cx, cy2);
+
+		drawGear(gear4, a4, count);
+
+	//	document.getElementById("rect1").setAttribute("width", "100");
+console.log(document.getElementById("gear4"));
+		var duration = document.getElementById("gear4").getAttribute("transform");
+console.log(duration);
+//		document.getElementById("gear4").getAttribute("dur");
+//		document.getElementById("gear4").setAttribute("dur", "10s");
+//console.log(gear4);
+console.log(document.getElementById("gear4"));
+//		gear4.setAttribute("dur", "20s");
+	</script>
+
+</body>
+</html>
