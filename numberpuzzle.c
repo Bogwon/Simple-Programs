@@ -1,6 +1,7 @@
 /*	numberpuzzle.c
 	Chuck Pergiel
 	August 4, 2021
+	https://pergelator.blogspot.com/2021/08/number-jigsaw-puzzle.html
 
 Program to solve jigsaw puzzle composed the decimal digits.
 
