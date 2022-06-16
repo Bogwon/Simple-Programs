@@ -2,6 +2,8 @@
 
 Set text editor tab width to 4
 
+Blog post about this program: https://pergelator.blogspot.com/2022/06/zebra-puzzle.html
+
 The following version of the puzzle appeared in Life International in 1962:
 
 There are five houses.
