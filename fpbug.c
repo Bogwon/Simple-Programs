@@ -1,13 +1,22 @@
-/* https://community.intel.com/t5/Software-Archive/gcc-5-1-mfpmath-387-Floating-point-exception/m-p/1015475
+/* From:
+https://community.intel.com/t5/Software-Archive/gcc-5-1-mfpmath-387-Floating-point-exception/m-p/1015475
 
-$  cc -fcilkplus                    fpbug.c -lcilkrts -lm	f(1)+g(2)=0.850648
-$  cc -fcilkplus -Wall              fpbug.c -lcilkrts -lm	f(1)+g(2)=0.850648
-$  cc -fcilkplus -Wall -mfpmath=387 fpbug.c -lcilkrts -lm	Floating point exception
+Set text editor tab width to 4
 
+Command lines:																				Execution:				Results:
+------------------------------------------------------------------------------------------	--------------------	------------------------
 $  gcc-5.1/bin/gcc -fcilkplus -Wall -mfpmath=387 fpbug.c -o fpbug-gcc510-387 -lcilkrts -lm	$ ./fpbug-gcc510-387	Floating point exception
 $  gcc-5.1/bin/gcc -fcilkplus -Wall -mfpmath=sse fpbug.c -o fpbug-gcc510-sse -lcilkrts -lm	$ ./fpbug-gcc510-sse	f(1)+g(2)=0.850648
 $ cilk-4.8/bin/gcc -fcilkplus -Wall -mfpmath=387 fpbug.c -o fpbug-cilk48-387 -lcilkrts -lm	$ ./fpbug-cilk48-387	f(1)+g(2)=0.850648
 $ cilk-4.8/bin/gcc -fcilkplus -Wall -mfpmath=sse fpbug.c -o fpbug-cilk48-sse -lcilkrts -lm	$ ./fpbug-cilk48-sse	f(1)+g(2)=0.850648
+
+My blog post on the subject: https://pergelator.blogspot.com/2022/06/computer-math.html
+
+Command lines:												Results:
+---------------------------------------------------------	------------------------
+$  cc -fcilkplus                    fpbug.c -lcilkrts -lm	f(1)+g(2)=0.850648
+$  cc -fcilkplus -Wall              fpbug.c -lcilkrts -lm	f(1)+g(2)=0.850648
+$  cc -fcilkplus -Wall -mfpmath=387 fpbug.c -lcilkrts -lm	Floating point exception
 */
 
 #include <stdio.h>

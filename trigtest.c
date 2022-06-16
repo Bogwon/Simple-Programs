@@ -1,23 +1,31 @@
-/* https://community.intel.com/t5/Intel-C-Compiler/What-is-wrong-in-fsin-opcode/m-p/926872
+/* From:
+https://community.intel.com/t5/Intel-C-Compiler/What-is-wrong-in-fsin-opcode/m-p/926872
 
-Trig Test
+My blog post on the subject: https://pergelator.blogspot.com/2022/06/computer-math.html
 
-$ cc trigtest.c -lm -DTEST=1
-$ time ./a.out
-2.356194
+Set text editor tab width to 4
 
-real	0m1.046s
-user	0m1.044s
-sys	0m0.000s
+Terminal log of this test:
+
+	$ cc trigtest.c -lm -DTEST=1
+	$ time ./a.out
+	2.356194
+
+	real	0m1.046s
+	user	0m1.044s
+	sys	0m0.000s
 
 
-$ cc trigtest.c -lm -DTEST=2
-$ time ./a.out
-3.141593
+	$ cc trigtest.c -lm -DTEST=2
+	$ time ./a.out
+	3.141593
 
-real	0m8.666s
-user	0m8.640s
-sys	0m0.000s
+	real	0m8.666s
+	user	0m8.640s
+	sys	0m0.000s
+
+The important thing to notice is that the TEST 2 takes roughly 8 times longer than TEST 1
+even though it only makes one call to the trig library.
 
 */
 
