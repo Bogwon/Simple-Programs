@@ -137,7 +137,7 @@ int main(int count, char** p)
 {
 	if (count<2)
 	{
-		printf("Program requires one parameter - a non-negative integer." EOL);
+		printf("Program requires one parameter - a positive integer." EOL);
 		return -1;
 	}
 	if (count > 2)
@@ -154,6 +154,16 @@ int main(int count, char** p)
 	{
 		printf("%s is too large. Limit is 2^31 - 1." EOL, p[1]);
 		return -2;
+	}
+	if (n<=0)
+	{
+		printf("%d is not positive. Program requires a positive integer." EOL, n);
+		return - 3;
+	}
+	if (n==1)
+	{
+		printf("The number 1 has no factors." EOL);
+		return - 4;
 	}
 
 	n = factor(n, factors);
